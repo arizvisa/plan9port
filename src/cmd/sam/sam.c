@@ -55,15 +55,18 @@ main(int _argc, char **_argv)
 		break;
 	case 'r':
 		machine = EARGF(usage());
+        dprint("option %c is disabled in this version\n", ARGC());
 		break;
 	case 'R':
 		Rflag++;
 		break;
 	case 't':
 		samterm = EARGF(usage());
+        dprint("option %c is disabled in this version\n", ARGC());
 		break;
 	case 's':
 		rsamname = EARGF(usage());
+        dprint("option %c is disabled in this version\n", ARGC());
 		break;
 	default:
 		dprint("sam: unknown flag %c\n", ARGC());
@@ -71,10 +74,12 @@ main(int _argc, char **_argv)
 	/* options for samterm */
 	case 'a':
 		*ap++ = "-a";
+        dprint("samterm option %c is disabled in this version\n", ARGC());
 		break;
 	case 'W':
 		*ap++ = "-W";
 		*ap++ = EARGF(usage());
+        dprint("samterm option %c is disabled in this version\n", ARGC());
 		break;
 	}ARGEND
 	*ap = nil;
@@ -90,8 +95,10 @@ main(int _argc, char **_argv)
 	disk = diskinit();
 	if(home == 0)
 		home = "/";
+#if 0
 	if(!dflag)
 		startup(machine, Rflag, termargs, (char**)argv);
+#endif
 	notify(notifyf);
 	getcurwd();
 	if(argc>0){
@@ -129,7 +136,8 @@ rescue(void)
 	int i, nblank = 0;
 	File *f;
 	char *c;
-	char buf[256];
+	char buf[PATH_MAX];
+	char buf2[PATH_MAX];
 	char *root;
 
 	if(rescuing++)
@@ -139,12 +147,14 @@ rescue(void)
 		f = file.filepptr[i];
 		if(f==cmd || f->b.nc==0 || !fileisdirty(f))
 			continue;
+#if 0
 		if(io == -1){
 			sprint(buf, "%s/sam.save", home);
 			io = create(buf, 1, 0777);
 			if(io<0)
 				return;
 		}
+#endif
 		if(f->name.s[0]){
 			c = Strtoc(&f->name);
 			strncpy(buf, c, sizeof buf-1);
@@ -152,6 +162,20 @@ rescue(void)
 			free(c);
 		}else
 			sprint(buf, "nameless.%d", nblank++);
+
+		if(io == -1){
+            root = temp_dir();
+			sprint(buf2, "%s/%s", root, buf);
+			io = create(buf, 1, 0777);
+			if(io<0)
+				return;
+		}
+
+		addr.r.p1 = 0, addr.r.p2 = f->b.nc;
+		writeio(f);
+
+		dprint("sam: rescue: %s\n", buf2);
+#if 0
 		root = getenv("PLAN9");
 		if(root == nil)
 			root = "/usr/local/plan9";
@@ -159,6 +183,7 @@ rescue(void)
 		addr.r.p1 = 0, addr.r.p2 = f->b.nc;
 		writeio(f);
 		fprint(io, "\n---%s\n", (char *)buf);
+#endif
 	}
 }
 
@@ -230,7 +255,7 @@ void
 trytoclose(File *f)
 {
 	char *t;
-	char buf[256];
+	char buf[PATH_MAX];
 
 	if(f == cmd)	/* possible? */
 		return;
@@ -496,7 +521,7 @@ void
 getcurwd(void)
 {
 	String *t;
-	char buf[256];
+	char buf[PATH_MAX];
 
 	buf[0] = 0;
 	getwd(buf, sizeof(buf));

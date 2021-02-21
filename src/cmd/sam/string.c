@@ -1,7 +1,7 @@
 #include "sam.h"
 
 #define	MINSIZE	16		/* minimum number of chars allocated */
-#define	MAXSIZE	256		/* maximum number of chars for an empty string */
+#define	MAXSIZE	1024	/* maximum number of chars for an empty string */
 
 
 void

@@ -3,6 +3,8 @@
 #include <plumb.h>
 #include "errors.h"
 
+#define PATH_MAX 4096
+
 #undef waitfor
 #define waitfor samwaitfor
 
@@ -323,6 +325,7 @@ char	*Strtoc(String*);
 void	syserror(char*);
 void	telldot(File*);
 void	tellpat(void);
+char*   temp_dir();
 String	*tmpcstr(char*);
 String	*tmprstr(Rune*, int);
 void	freetmpstr(String*);

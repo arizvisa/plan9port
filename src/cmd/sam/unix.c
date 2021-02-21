@@ -147,6 +147,14 @@ notifyf(void *a, char *b)       /* never called; hup is instead */
 {
 }
 
+char*
+temp_dir()
+{
+    char* tmp;
+    tmp = getenv("TMPDIR");
+    return tmp == NULL? TMPDIR : tmp;
+}
+
 static int
 temp_file(char *buf, int bufsize)
 {
